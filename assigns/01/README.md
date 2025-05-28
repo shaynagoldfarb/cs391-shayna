@@ -11,4 +11,4 @@ Please first study the code in the following directories:
 - lectures/lecture-05-28: substitution-based interpreter in ML-like syntax
 
 Then translate the code in lambda1.dats (which can be found in lectures/lecture-05-28)
-into Python3.
+into Python3. You should follow the translation of `term_subst` done in lecture-05-27.
