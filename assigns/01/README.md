@@ -16,8 +16,9 @@ translation of `term_subst` done in lecture-05-27.
 
 You are expected to have all of your submitted in one file of the name
 `lambda1.py`; this file should be stored in the directory
-`assigns/01/MySolution`. Please the following page for information on
-creating a private repository of your own for this class:
+`assigns/01/MySolution`. Please visit the following page for
+information on creating a private repository of your own for this
+class:
 
 ```
 https://github.com/hwxi/CS391-2025-Summer/blob/main/README.md
