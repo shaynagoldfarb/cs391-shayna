@@ -332,132 +332,92 @@ case- pnm of
 (
 TMint(i01+i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 |"-" =>
 (
 TMint(i01-i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 |"*" =>
 (
 TMint(i01*i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 |"/" =>
 (
 TMint(i01/i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 //
 |"<" =>
 (
 TMbtf(i01<i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 |">" =>
 (
 TMbtf(i01>i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 |"=" =>
 (
 TMbtf(i01=i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 |"<=" =>
 (
 TMbtf(i01<=i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 |">=" =>
 (
 TMbtf(i01>=i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 |"!=" =>
 (
 TMbtf(i01!=i02)) where
 {
-val-
-list_cons(tm1, tms) = tms
-val-
-list_cons(tm2, tms) = tms
-val-
-TMint(i01) = term_interp(tm1)
-val-
-TMint(i02) = term_interp(tm2)
+val-list_cons(tm1, tms) = tms
+val-list_cons(tm2, tms) = tms
+val-TMint(i01) = term_interp(tm1)
+val-TMint(i02) = term_interp(tm2)
 }
 //
 )(*case+*)//end-of-[TMopr(...)]
