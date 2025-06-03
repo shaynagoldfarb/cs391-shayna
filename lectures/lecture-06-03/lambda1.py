@@ -1,11 +1,3 @@
-# datatype tval =
-# | TVint of int
-# | TVbtf of bool
-# | TVclo of (term, xenv)
-
-# datatype xenv =
-# | EVnil of ()
-# | EVcons of (strn, tval, xenv)
 
 # datatype term =
 # | TMint of int
@@ -97,6 +89,11 @@ class term_fix(term):
 # end-of-class(term_fix(term))
 
 ##################################################################
+
+# datatype tval =
+# | TVint of int
+# | TVbtf of bool
+# | TVclo of (term, xenv)
 
 class tval:
     ctag = ""
@@ -198,7 +195,7 @@ def xenv_search(env, x00):
 ##################################################################
         
 def term_eval01(tm0, env):
-    print("term_eval01: tm0 = " + str(tm0))
+    # print("term_eval01: tm0 = " + str(tm0))
     if (tm0.ctag == "TMint"):
         return tval_int(tm0.arg1)
     if (tm0.ctag == "TMbtf"):
@@ -298,6 +295,8 @@ print("eval(int_1 <= int_1) = " + str(term_eval00(term_lte(int_1, int_1))))
 
 term_dbl = term_lam("x", term_add(var_x, var_x))
 print("eval(term_dbl(int_1)) = " + str(term_eval00(term_app(term_dbl, int_1))))
+
+##################################################################
 
 term_fact = \
     term_fix("f", "n", \
