@@ -9,12 +9,12 @@ Please first study the code in the following directories:
 - lectures/lecture-06-02: closure-base evaluation (ML-like)
 - lectures/lecture-06-03: closure-base evaluation (Python 3)
 
-Please implement a translation that compile the extended
+Please implement a translation that compiles the extended
 lambda-calculus back to Church's pure lambda-calculus. More
 precisely, you need to "compile away" the following language
 constructs in the extended lambda-calculus:
 
-TMint, TMbtf, TMopr, TMif0, TMopr, and TMfix.
+TMint, TMbtf, TMif0, TMopr, and TMfix.
 
 This assignment aims at giving you a little "taste" for what
 a compiler is like. It also tries to show how "impractical" it
