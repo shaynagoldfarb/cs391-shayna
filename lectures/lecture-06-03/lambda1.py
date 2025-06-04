@@ -160,9 +160,12 @@ class xenv_cons(xenv):
 term_add = lambda a1, a2: term_opr("+", [a1, a2])
 term_sub = lambda a1, a2: term_opr("-", [a1, a2])
 term_mul = lambda a1, a2: term_opr("*", [a1, a2])
-term_lt = lambda a1, a2: term_opr("<", [a1, a2])
-term_gt = lambda a1, a2: term_opr(">", [a1, a2])
-term_eq = lambda a1, a2: term_opr("=", [a1, a2])
+term_div = lambda a1, a2: term_opr("/", [a1, a2])
+term_mod = lambda a1, a2: term_opr("%", [a1, a2])
+
+term_lt0 = lambda a1, a2: term_opr("<", [a1, a2])
+term_gt0 = lambda a1, a2: term_opr(">", [a1, a2])
+term_eq0 = lambda a1, a2: term_opr("=", [a1, a2])
 term_lte = lambda a1, a2: term_opr("<=", [a1, a2])
 term_gte = lambda a1, a2: term_opr(">=", [a1, a2])
 term_neq = lambda a1, a2: term_opr("!=", [a1, a2])
@@ -234,6 +237,41 @@ def term_eval01(tm0, env):
             assert tv1.ctag == "TVint"
             assert tv2.ctag == "TVint"
             return tval_int(tv1.arg1 * tv2.arg1)
+        if (pnm == "%"):
+            assert len(ags) == 2
+            tv1 = term_eval01(ags[0], env)
+            tv2 = term_eval01(ags[1], env)
+            assert tv1.ctag == "TVint"
+            assert tv2.ctag == "TVint"
+            return tval_int(tv1.arg1 % tv2.arg1)
+        if (pnm == "/"):
+            assert len(ags) == 2
+            tv1 = term_eval01(ags[0], env)
+            tv2 = term_eval01(ags[1], env)
+            assert tv1.ctag == "TVint"
+            assert tv2.ctag == "TVint"
+            return tval_int(tv1.arg1 // tv2.arg1)
+        if (pnm == "<"):
+            assert len(ags) == 2
+            tv1 = term_eval01(ags[0], env)
+            tv2 = term_eval01(ags[1], env)
+            assert tv1.ctag == "TVint"
+            assert tv2.ctag == "TVint"
+            return tval_btf(tv1.arg1 < tv2.arg1)
+        if (pnm == ">"):
+            assert len(ags) == 2
+            tv1 = term_eval01(ags[0], env)
+            tv2 = term_eval01(ags[1], env)
+            assert tv1.ctag == "TVint"
+            assert tv2.ctag == "TVint"
+            return tval_btf(tv1.arg1 > tv2.arg1)
+        if (pnm == "="):
+            assert len(ags) == 2
+            tv1 = term_eval01(ags[0], env)
+            tv2 = term_eval01(ags[1], env)
+            assert tv1.ctag == "TVint"
+            assert tv2.ctag == "TVint"
+            return tval_btf(tv1.arg1 == tv2.arg1)
         if (pnm == "<="):
             assert len(ags) == 2
             tv1 = term_eval01(ags[0], env)
@@ -241,6 +279,20 @@ def term_eval01(tm0, env):
             assert tv1.ctag == "TVint"
             assert tv2.ctag == "TVint"
             return tval_btf(tv1.arg1 <= tv2.arg1)
+        if (pnm == ">="):
+            assert len(ags) == 2
+            tv1 = term_eval01(ags[0], env)
+            tv2 = term_eval01(ags[1], env)
+            assert tv1.ctag == "TVint"
+            assert tv2.ctag == "TVint"
+            return tval_btf(tv1.arg1 >= tv2.arg1)
+        if (pnm == "!="):
+            assert len(ags) == 2
+            tv1 = term_eval01(ags[0], env)
+            tv2 = term_eval01(ags[1], env)
+            assert tv1.ctag == "TVint"
+            assert tv2.ctag == "TVint"
+            return tval_btf(tv1.arg1 != tv2.arg1)
         raise TypeError(pnm) # HX-2025-06-03: unsupported!
     if (tm0.ctag == "TMapp"):
         tm1 = tm0.arg1
@@ -298,12 +350,13 @@ print("eval(term_dbl(int_1)) = " + str(term_eval00(term_app(term_dbl, int_1))))
 
 ##################################################################
 
+int_10 = term_int(10)
 term_fact = \
     term_fix("f", "n", \
              term_if0(term_lte(var_n, int_0), \
                       int_1, \
                       term_mul(var_n, term_app(var_f, term_sub(var_n, int_1)))))
-print("eval(term_fact(int_5)) = " + str(term_eval00(term_app(term_fact, int_5))))
+print("eval(term_fact(int_10)) = " + str(term_eval00(term_app(term_fact, int_10))))
 
 ##################################################################
 # end of [CS391-2025-Summer/lectures/lecture-06-03/lambda1.py]
