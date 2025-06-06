@@ -546,6 +546,9 @@ def term_comp00(tm0):
     if tm0.ctag == "TMbtf":
         btf = tm0.arg1
         return chtru if btf else chfls
+    if tm0.ctag == "TMvar":
+        x01 = tm0.arg1
+        return term_var(x01)
     if tm0.ctag == "TMlam":
         x01 = tm0.arg1
         tmx = tm0.arg2
@@ -553,8 +556,16 @@ def term_comp00(tm0):
     if tm0.ctag == "TMapp":
         tm1 = tm0.arg1
         tm2 = tm0.arg2
-        return term_lam(term_comp00(tm1), term_comp00(tm2))
+        return term_app(term_comp00(tm1), term_comp00(tm2))
+    if tm0.ctag == "TMfix":
+        f00 = tm0.arg1
+        x01 = tm0.arg2
+        tmx = tm0.arg3
+        return term_fix_(f00, x01, term_comp00(tmx))
     if tm0.ctag == "TMif0":
+        tm1 = tm0.arg1
+        tm2 = tm0.arg2
+        tm3 = tm0.arg3
         return term_if0_(term_comp00(tm1), term_comp00(tm2), term_comp00(tm3))
     #
     # Please try to handle TMopr on your own!
