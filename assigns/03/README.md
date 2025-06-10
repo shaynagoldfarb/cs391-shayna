@@ -62,6 +62,8 @@ during lecture-06-10.  If you are not clear as to what type annotation
 means, please study the examples `term_dbl` and `term_fact` presented
 during lecture-06-10.
 
+### Submission
+
 You are expected to have all of your submitted code in one file of
 the name `assign03.py`; this file should be stored in the directory
 of the name `assigns/03/MySolution`. Please visit the following page
