@@ -9,6 +9,8 @@ where a simple type-checker for some extended lambda-calculus:
 
 - lectures/lecture-06-10: pure type-checking for LAMBDA
 
+### Task 1
+
 Please extend the code in `lecture-06-10/lambda2.py` to handle
 addtion languge constructs `TMlet`, `TMfst`, `TMsnd`, and `TMtup`:
 
@@ -38,6 +40,9 @@ datatype term =
 // TMlet of (strn(*x*), term(*t1*), term(*t2))
 //
 ```
+This part is worth 80 points.
+
+### Task 2
 
 Please annotate the following term with types for
 bound variables:
@@ -51,9 +56,11 @@ chnum_mul = \
       term_app(term_app(var_m, term_app(var_n, var_f)), var_x)))))
 ```
 
-For receiving full credit,
-your annotate version of `chnum_mul` must be able to pass
-the simple type-checking implemented during lecture-06-10.
+For receiving full credit (20 points), your annotated version of
+`chnum_mul` must be able to pass the simple type-checking implemented
+during lecture-06-10.  If you are not clear as to what type annotation
+means, please study the examples `term_dbl` and `term_fact` presented
+during lecture-06-10.
 
 You are expected to have all of your submitted code in one file of
 the name `assign03.py`; this file should be stored in the directory
