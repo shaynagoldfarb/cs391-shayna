@@ -403,5 +403,13 @@ term_fact = \
 print("tpck(term_fact) = " + str(term_tpck00(term_fact)))
 
 ##################################################################
+
+CHNUM3 = \
+  term_lam("f", styp_fun_int_int, \
+    term_lam("x", styp_int, term_app(var_f, term_app(var_f, term_app(var_f, var_x)))))
+
+print("tpck(CHNUM3) = " + str(term_tpck00(CHNUM3)))
+
+##################################################################
 # end of [CS391-2025-Summer/lectures/lecture-06-03/lambda2.py]
 ##################################################################
