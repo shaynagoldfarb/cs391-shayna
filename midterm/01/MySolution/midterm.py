@@ -439,3 +439,96 @@ def term_eval01(tm0, env):
         return term_eval01(tm0.arg3, new_env)
     raise TypeError(tm0)
 
+# int8 = (int, int, int, int, int, int, int, int)
+def board8():
+    zero = term_int(0)
+    return term_tup(zero, term_tup(zero, term_tup(zero, term_tup(zero,
+           term_tup(zero, term_tup(zero, term_tup(zero, zero)))))))
+
+# board_get: if i=0 then bd.0 else if i=1 then bd.1 … 
+def board_get():
+    return term_fix("board_get", "bd", None, None,
+        term_lam("i", None,
+            term_if0(term_opr("=", [term_var("i"), term_int(0)]),
+                  term_fst(term_var("bd")),
+            term_if0(term_opr("=", [term_var("i"), term_int(1)]),
+                  term_snd(term_var("bd")),
+            term_if0(term_opr("=", [term_var("i"), term_int(2)]),
+                  term_snd(term_var("bd")),
+            term_if0(term_opr("=", [term_var("i"), term_int(3)]),
+                  term_snd(term_var("bd")),
+            term_if0(term_opr("=", [term_var("i"), term_int(4)]),
+                  term_snd(term_var("bd")),
+            term_if0(term_opr("=", [term_var("i"), term_int(5)]),
+                  term_snd(term_var("bd")),
+            term_if0(term_opr("=", [term_var("i"), term_int(6)]),
+                  term_snd(term_var("bd")),
+            term_if0(term_opr("=", [term_var("i"), term_int(7)]),
+                  term_snd(term_var("bd")),
+            term_int(-1)  # default case
+            ))))))))))
+
+# fun safety_test1: can a piece on row i0 and col j0 capture one on row i and col j
+def safety_test1():
+    return term_lam("i0", None, term_lam("j0", None, term_lam("i", None,
+           term_lam("j", None,
+               term_opr("and", [
+                   term_opr("!=", [term_var("j0"), term_var("j")]),
+                   term_opr("!=", [
+                       term_opr("abs", [term_opr("-", [term_var("i0"), term_var("i")])]),
+                       term_opr("abs", [term_opr("-", [term_var("j0"), term_var("j")])])
+                   ])
+               ])
+           ))))
+
+# fun safety_test2: can a piece on row i0 and col j0 capture any r<=i
+def safety_test2():
+    return term_fix("safety_test2", "u", None, None,
+        term_lam("i", None,
+            term_if0(term_opr(">=", [term_var("i"), term_int(0)]),
+                term_let("j", term_app(term_app(term_var("board_get"), term_var("u.bd")), term_var("i")),
+                    term_if0(
+                        term_app(term_app(term_app(term_app(term_var("safety_test1"),
+                             term_var("u.i0")), term_var("u.j0")),
+                             term_var("i")), term_var("j")),
+                        term_app(term_app(term_var("safety_test2"), term_var("u")), term_opr("-", [term_var("i"), term_int(1)])),
+                        term_btf(False)
+                    )
+                ),
+                term_btf(True)
+            )
+        )
+    )
+
+# search: finds num of distinct solutions to the puzzle
+def search():
+    return term_fix("search", "bd", None, None,
+        term_lam("i", None,
+        term_lam("j", None,
+        term_lam("nsol", None,
+            term_if0(term_opr("<", [term_var("j"), term_int(8)]),
+                term_let("safe", term_app(term_app(term_app(term_app(term_var("safety_test2"),
+                                                     term_var("i")), term_var("j")),
+                                                     term_var("bd")), term_opr("-", [term_var("i"), term_int(1)])),
+                    term_if0(term_var("safe"),
+                        term_let("bd1", term_app(term_app(term_app(term_var("board_set"),
+                                                       term_var("bd")), term_var("i")), term_var("j")),
+                            term_if0(term_opr("=", [term_opr("+", [term_var("i"), term_int(1)]), term_int(8)]),
+                                term_app(term_app(term_app(term_var("search"), term_var("bd")), term_var("i")), term_opr("+", [term_var("j"), term_int(1)])),
+                                term_app(term_app(term_app(term_var("search"), term_var("bd1")), term_opr("+", [term_var("i"), term_int(1)])), term_int(0))
+                            )
+                        ),
+                        term_app(term_app(term_app(term_var("search"), term_var("bd")), term_var("i")), term_opr("+", [term_var("j"), term_int(1)]))
+                    )
+                ),
+                term_if0(term_opr(">", [term_var("i"), term_int(0)]),
+                    term_app(term_app(term_app(term_var("search"), term_var("bd")), term_opr("-", [term_var("i"), term_int(1)])),
+                        term_opr("+", [
+                            term_app(term_app(term_var("board_get"), term_var("bd")), term_opr("-", [term_var("i"), term_int(1)])),
+                            term_int(1)
+                        ])
+                    ),
+                    term_var("nsol")
+                )
+            )
+        ))))
