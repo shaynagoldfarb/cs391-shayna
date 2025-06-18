@@ -611,7 +611,7 @@ def term_comp01(tm0, cenv):
         return tcmp([ins0], ttmp)
     if (tm0.ctag == "TMvar"):
         x01 = tm0.arg1
-        tmp1 = cenv_search(ctx, x01)
+        tmp1 = cenv_search(cenv, x01)
         return tcmp([], tmp1)
     if (tm0.ctag == "TMopr"):
         pnm = tm0.arg1
@@ -648,29 +648,31 @@ def term_comp01(tm0, cenv):
         ins0 = tins_if0(ttmp, tmp1, cmp2, cmp3)
         inss = ins1 + [ins0]
         return tcmp(inss, ttmp)
-    if (tm0.ctag = "TMlam"):
+    if (tm0.ctag == "TMlam"):
         x01 = tm0.arg1
         fun0 = tfun_new()
         arg0 = targ_new()
         cenv = cenv_cons(x01, arg0, cenv)
-        cmp1 = tm0.arg3
+        cmp1 = term_comp01(tm0.arg3, cenv)
         inss = [tins_fun(fun0, cmp1)]
         return tcmp(inss, fun0)
-    if (tm0.ctag = "TMfix"):
+    if (tm0.ctag == "TMfix"):
         f00 = tm0.arg1
         x01 = tm0.arg2
         fun0 = tfun_new()
         arg0 = targ_new()
         cenv = cenv_cons(f00, fun0, cenv)
         cenv = cenv_cons(x01, arg0, cenv)
-        cmp1 = tm0.arg5
+        cmp1 = term_comp01(tm0.arg5, cenv)
         inss = [tins_fun(fun0, cmp1)]
         return tcmp(inss, fun0)
     raise TypeError(tm0) # HX-2025-06-18: unsupported!
 
-print("comp(TMint(0)) = " + str(term_comp00(term_int(1))))
-print("comp(TMbtf(True)) = " + str(term_comp00(term_btf(True))))
-print("comp(TMadd(TMint(1),TMint(2))) = " + str(term_comp00(term_add(int_1, int_2))))
+print("comp00(int_1) = " + str(term_comp00(int_1)))
+print("comp00(btf_t) = " + str(term_comp00(btf_t)))
+print("comp00(term_add(int_1, int_2)) = " + str(term_comp00(term_add(int_1, int_2))))
+print("comp00(term_dbl) = " + str(term_comp00(term_dbl)))
+# print("comp00(term_fact) = " + str(term_comp00(term_fact)))
 
 ##################################################################
 # end of [CS391-2025-Summer/lectures/lecture-06-03/lambda3.py]
