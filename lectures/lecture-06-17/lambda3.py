@@ -414,5 +414,51 @@ CHNUM3 = \
 print("tpck(CHNUM3) = " + str(term_tpck00(CHNUM3)))
 
 ##################################################################
-# end of [CS391-2025-Summer/lectures/lecture-06-03/lambda2.py]
+
+# datatype treg =
+# TREG of (strn(*prfx*), sint(*sffx*))
+
+class treg:
+    prfx = ""
+    ntmp = 100
+    nfun = 100
+    def __init__(self, prfx, sffx):
+        self.prfx = prfx; self.sffx = sffx
+    def __str__(self):
+        return ("treg(" + self.prfx + str(self.sffx) + ")")
+# end-of-class(treg)
+
+def targ_make():
+    return treg("arg", 0)
+def ttmp_make():
+    treg.ntmp += 1
+    return treg("tmp", treg.ntmp)
+def tfun_make():
+    treg.nfun += 1
+    return treg("fun", treg.nfun)
+
+arg0 = targ_make()
+tmp1 = ttmp_make()
+tmp2 = ttmp_make()
+fun1 = tfun_make()
+fun2 = tfun_make()
+print("arg0 = " + str(arg0))
+print("tmp1 = " + str(tmp1))
+print("tmp2 = " + str(tmp2))
+print("fun1 = " + str(fun1))
+print("fun2 = " + str(fun2))
+
+##################################################################
+
+# datatype tins =
+# | TINSmov of (treg, treg)
+# | TINSapp of (treg, treg, treg)
+# | TINSopr of (treg, strn, list(treg))
+# | TINSfun of (treg(*f00*), list(tins), treg)
+
+# datatype tcmp =
+# | TCMP of (list(tins), treg)
+
+##################################################################
+# end of [CS391-2025-Summer/lectures/lecture-06-03/lambda3.py]
 ##################################################################
