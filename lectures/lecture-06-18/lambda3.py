@@ -380,8 +380,11 @@ def term_tpck01(tm0, ctx):
         return stf
     raise TypeError(tm0) # HX-2025-06-10: should be deadcode!
 
+int_0 = term_int(0)
 int_1 = term_int(1)
+int_2 = term_int(2)
 btf_t = term_btf(True)
+btf_f = term_btf(False)
 print("tpck(int_1) = " + str(term_tpck00(int_1)))
 print("tpck(btf_t) = " + str(term_tpck00(btf_t)))
 print("tpck(term_add(int_1, int_1)) = " + str(term_tpck00(term_add(int_1, int_1))))
@@ -437,23 +440,47 @@ def tfun_new():
     treg.nfun += 1
     return treg("fun", treg.nfun)
 
-arg0 = targ_new()
-tmp1 = ttmp_new()
-tmp2 = ttmp_new()
-fun1 = tfun_new()
-fun2 = tfun_new()
-print("arg0 = " + str(arg0))
-print("tmp1 = " + str(tmp1))
-print("tmp2 = " + str(tmp2))
-print("fun1 = " + str(fun1))
-print("fun2 = " + str(fun2))
+# arg0 = targ_new()
+# tmp1 = ttmp_new()
+# tmp2 = ttmp_new()
+# fun1 = tfun_new()
+# fun2 = tfun_new()
+# print("arg0 = " + str(arg0))
+# print("tmp1 = " + str(tmp1))
+# print("tmp2 = " + str(tmp2))
+# print("fun1 = " + str(fun1))
+# print("fun2 = " + str(fun2))
 
 ##################################################################
 
 # datatype tval =
 # | TVALint of sint
 # | TVALbtf of bool
+# | TVALchr of char
+# | TVALstr of strn
 # | TVALreg of treg
+
+class tval:
+    ctag = ""
+    def __str__(self):
+        return ("tval(" + self.ctag + ")")
+# end-of-class(tval)
+
+class tval_int(tval):
+    def __init__(self, arg1):
+        self.arg1 = arg1
+        self.ctag = "TVALint"
+    def __str__(self):
+        return ("TVALint(" + str(self.arg1) + ")")
+# end-of-class(tval_int(tval))
+
+class tval_btf(tval):
+    def __init__(self, arg1):
+        self.arg1 = arg1
+        self.ctag = "TVALbtf"
+    def __str__(self):
+        return ("TVALbtf(" + str(self.arg1) + ")")
+# end-of-class(tval_btf(tval))
 
 # datatype tins =
 # | TINSmov of (treg(*dst*), tval(*src*))
@@ -461,6 +488,9 @@ print("fun2 = " + str(fun2))
 # | TINSopr of (treg(*res*), strn(*opr*), list(treg))
 # | TINSfun of (treg(*f00*), tcmp(*body*))
 # | TINSif0 of (treg(*res*), treg(*test*), tcmp(*then*), tcmp(*else*))
+
+# datatype tcmp =
+# | TCMP of (list(tins), treg(*res*))
 
 class tins:
     ctag = ""
@@ -476,6 +506,7 @@ class tins_mov(tins):
     def __str__(self):
         return ("tins_mov(" + str(self.arg1) + ";" + str(self.arg2) + ")")
 
+# | TINSopr of (treg(*res*), strn(*opr*), list(treg))
 class tins_opr(tins):
     def __init__(self, arg1, arg2, arg3):
         self.arg1 = arg1
@@ -485,6 +516,7 @@ class tins_opr(tins):
     def __str__(self):
         return ("tins_opr(" + str(self.arg1) + ";" + str(self.arg2) + ";" + str(self.arg3) + ")")
 
+# | TINSapp of (treg(*res*), treg(*fun*), treg(*arg*))
 class tins_app(tins):
     def __init__(self, arg1, arg2, arg3):
         self.arg1 = arg1
@@ -494,6 +526,7 @@ class tins_app(tins):
     def __str__(self):
         return ("tins_app(" + str(self.arg1) + ";" + str(self.arg2) + ";" + str(self.arg3) + ")")
 
+# | TINSif0 of (treg(*res*), treg(*test*), tcmp(*then*), tcmp(*else*))
 class tins_if0(tins):
     def __init__(self, arg1, arg2, arg3, arg4):
         self.arg1 = arg1
@@ -504,14 +537,23 @@ class tins_if0(tins):
     def __str__(self):
         return ("tins_if0(" + str(self.arg1) + ";" + str(self.arg2) + ";" + str(self.arg3) + ";" + str(self.arg4) + ")")
 
+# | TINSfun of (treg(*f00*), tcmp(*body*))
+class tins_fun(tins):
+    def __init__(self, arg1, arg2):
+        self.arg1 = arg1
+        self.arg2 = arg2
+        self.ctag = "TINSfun"
+    def __str__(self):
+        return ("tins_fun(" + str(self.arg1) + ";" + str(self.arg2) + ";" + ")")
+
 # datatype tcmp =
 # | TCMP of (list(tins), treg)
 
 class tcmp:
-    def __init__(inss, treg):
+    def __init__(self, inss, treg):
         self.arg1 = inss; self.arg2 = treg
     def __str__(self):
-        return ("tcmp(" + "..." + ";" + str(self.treg) + ")")
+        return ("tcmp(" + "..." + ";" + str(self.arg2) + ")")
 # end-of-class(tcmp)
 
 ##################################################################
@@ -545,15 +587,90 @@ class cenv_cons(cenv):
 
 ##################################################################
 
-def term_comp00(tm0):
+def term_comp00(tm0): # "computation"
     return term_comp01(tm0, cenv_nil())
 
-def term_comp01(tm0, env):
+def cenv_search(env, x00):
+    if env.ctag == "CENVnil":
+        return None
+    if env.ctag == "CENVcons":
+        if env.arg1 == x00:
+            return env.arg2
+        else:
+            return cenv_search(env.arg3, x00)
+    raise TypeError(env) # HX-2025-06-10: deadcode!
+
+def term_comp01(tm0, cenv):
     if (tm0.ctag == "TMint"):
         ttmp = ttmp_new()
-        tins = tins_mov(ttmp, TVALint(tm0.arg1))
-        return tcmp([tins], ttmp)
-    raise TypeError(tm0) # HX-2025-06-18: should be deadcode!
+        ins0 = tins_mov(ttmp, tval_int(tm0.arg1))
+        return tcmp([ins0], ttmp)
+    if (tm0.ctag == "TMbtf"):
+        ttmp = ttmp_new()
+        ins0 = tins_mov(ttmp, tval_btf(tm0.arg1))
+        return tcmp([ins0], ttmp)
+    if (tm0.ctag == "TMvar"):
+        x01 = tm0.arg1
+        tmp1 = cenv_search(ctx, x01)
+        return tcmp([], tmp1)
+    if (tm0.ctag == "TMopr"):
+        pnm = tm0.arg1
+        ags = tm0.arg2 # list of arguments
+        if (pnm == "+"):
+            assert len(ags) == 2
+            cmp1 = term_comp01(ags[0], cenv)
+            cmp2 = term_comp01(ags[1], cenv)
+            ins1 = cmp1.arg1
+            tmp1 = cmp1.arg2
+            ins2 = cmp2.arg1
+            tmp2 = cmp2.arg2
+            ttmp = ttmp_new()
+            inss = ins1 + ins2 + [tins_opr(ttmp, "+", [tmp1, tmp2])]
+            return tcmp(inss, ttmp)
+        raise TypeError(pnm) # HX-2025-06-18: unsupported!
+    if (tm0.ctag == "TMapp"):    
+        cmp1 = term_comp01(tm0.arg1, cenv)
+        cmp2 = term_comp01(tm0.arg2, cenv)
+        ins1 = cmp1.arg1
+        tmp1 = cmp1.arg2
+        ins2 = cmp2.arg1
+        tmp2 = cmp2.arg2
+        ttmp = ttmp_new()
+        inss = ins1 + ins2 + [tins_app(ttmp, tmp1, tmp2)]
+        return tcmp(inss, ttmp)
+    if (tm0.ctag == "TMif0"):
+        cmp1 = term_comp01(tm0.arg1, cenv) # test
+        cmp2 = term_comp01(tm0.arg2, cenv) # then
+        cmp3 = term_comp01(tm0.arg3, cenv) # else
+        ins1 = cmp1.arg1
+        tmp1 = cmp1.arg2
+        ttmp = ttmp_new()
+        ins0 = tins_if0(ttmp, tmp1, cmp2, cmp3)
+        inss = ins1 + [ins0]
+        return tcmp(inss, ttmp)
+    if (tm0.ctag = "TMlam"):
+        x01 = tm0.arg1
+        fun0 = tfun_new()
+        arg0 = targ_new()
+        cenv = cenv_cons(x01, arg0, cenv)
+        cmp1 = tm0.arg3
+        inss = [tins_fun(fun0, cmp1)]
+        return tcmp(inss, fun0)
+    if (tm0.ctag = "TMfix"):
+        f00 = tm0.arg1
+        x01 = tm0.arg2
+        fun0 = tfun_new()
+        arg0 = targ_new()
+        cenv = cenv_cons(f00, fun0, cenv)
+        cenv = cenv_cons(x01, arg0, cenv)
+        cmp1 = tm0.arg5
+        inss = [tins_fun(fun0, cmp1)]
+        return tcmp(inss, fun0)
+    raise TypeError(tm0) # HX-2025-06-18: unsupported!
+
+print("comp(TMint(0)) = " + str(term_comp00(term_int(1))))
+print("comp(TMbtf(True)) = " + str(term_comp00(term_btf(True))))
+print("comp(TMadd(TMint(1),TMint(2))) = " + str(term_comp00(term_add(int_1, int_2))))
 
 ##################################################################
 # end of [CS391-2025-Summer/lectures/lecture-06-03/lambda3.py]

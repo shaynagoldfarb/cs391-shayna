@@ -1,0 +1,38 @@
+# Assignment 4 for CS391X1, Summer I, 2025
+
+## Total points: 100
+
+## Description of the task
+
+During lecture-06-16 and lecture-06-17, we covered a method for
+compiling LAMBDA into C that makes use of boxed data representation.
+Please see `lecture-06-16/fact_out.c` and `lecture-06-16/fact2_out.c`
+for some concrete examples illustrating this method.
+
+### Task 1
+
+Please implement the following function by following the coding
+style used in `lecture-06-16/fact_out.c`.
+
+```
+fun f91(x: int): int =
+  if x > 100 then x-10 else f91(f91(x+11))
+```
+
+Note that your implementation of `f91` should have the following
+interface in C:
+
+```
+extern lamval1 f91(lamval1 x);
+
+### Submission
+
+You are expected to have all of your submitted code in one file of
+the name `assign03.py`; this file should be stored in the directory
+of the name `assigns/03/MySolution`. Please visit the following page
+for information on creating a private repository of your own for this
+class:
+
+```
+https://github.com/hwxi/CS391-2025-Summer/blob/main/README.md
+```
