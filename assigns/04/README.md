@@ -9,7 +9,7 @@ compiling LAMBDA into C that makes use of boxed data representation.
 Please see `lecture-06-16/fact_out.c` and `lecture-06-16/fact2_out.c`
 for some concrete examples illustrating this method.
 
-### Task 1
+### Task 1 (50 Points)
 
 Please implement the following function by following the coding
 style used in `lecture-06-16/fact_out.c`.
@@ -26,7 +26,30 @@ interface in C:
 extern lamval1 f91(lamval1 x);
 ```
 
-### Task 2
+### Task 2 (50 Points)
+
+The following function `isPrime` tests whether a given number `n`
+is a prime number:
+
+```
+fun
+isPrime(n: int): bool =
+let
+  fun helper(p: int): bool =
+    if p * p > n
+    then true else
+    (if n % p = 0 then false else helper(p+1))
+in
+  if n >= 2 then helper(2) else false
+end
+
+```
+
+Note the presence of an inner function `helper` in the body of
+`isPrime`.  Please first study the implementation of `term_comp00` in
+`lecture-06-18/lambda3.py`, and then _manually_ translate `isPrime`
+into some Python code that _roughly_ corresponds the code generated
+by `term_comp00` on compiling a function in LAMBDA that corresponds to `isPrime`.
 
 ### Submission
 
