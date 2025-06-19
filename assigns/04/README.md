@@ -24,6 +24,9 @@ interface in C:
 
 ```
 extern lamval1 f91(lamval1 x);
+```
+
+### Task 2
 
 ### Submission
 
