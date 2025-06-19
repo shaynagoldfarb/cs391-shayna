@@ -11,6 +11,9 @@ for some concrete examples illustrating this method.
 
 ### Task 1 (50 Points)
 
+This task tests your basic understanding of data boxing
+and unboxing.
+
 Please implement the following function by following the coding
 style used in `lecture-06-16/fact_out.c`.
 
@@ -27,6 +30,8 @@ extern lamval1 f91(lamval1 x);
 ```
 
 ### Task 2 (50 Points)
+
+This task tests your basic understanding of `term_comp00`.
 
 The following function `isPrime` tests whether a given number `n`
 is a prime number:
