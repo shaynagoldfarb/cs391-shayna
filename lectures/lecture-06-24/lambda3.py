@@ -675,5 +675,43 @@ print("comp00(term_dbl) = " + str(term_comp00(term_dbl)))
 # print("comp00(term_fact) = " + str(term_comp00(term_fact)))
 
 ##################################################################
-# end of [CS391-2025-Summer/lectures/lecture-06-18/lambda3.py]
+
+# datatype tins =
+# | TINSmov of (treg(*dst*), tval(*src*))
+# | TINSapp of (treg(*res*), treg(*fun*), treg(*arg*))
+# | TINSopr of (treg(*res*), strn(*opr*), list(treg))
+# | TINSfun of (treg(*f00*), tcmp(*body*))
+# | TINSif0 of (treg(*res*), treg(*test*), tcmp(*then*), tcmp(*else*))
+
+def strn_emit(strn):
+    print(strn, end='')
+
+def endl_emit(strn):
+    strn_emit('\n')
+
+def tval_emit(tval):
+    strn_emit(str(tval))
+
+def treg_emit(treg):
+    strn_emit(str(treg))
+
+def nind_emit(nind):
+    i0 = 0
+    while(i0 < nind):
+        i0 = i0 + 1
+        strn_emit(' ')
+    return None
+
+def tins_emit(nind, tins):
+    nind_emit(nind)
+    if (tins.ctag == "TINSmov"):
+        treg_emit(tins.arg1); strn_emit(' = '); tval_emit(tins.arg2); endl_emit()
+    if (tins.ctag == "TINSapp"):
+        treg_emit(tins.arg1); strn_emit(' = ');
+        tval_emit(tins.arg2); strn_emit('('); tval_emit(tins.arg3); strn_emit(')'); endl_emit()
+    # HX: please finish the rest of the cases
+    raise TypeError(tins) # HX-2025-06-24: should be deadcode!    
+
+##################################################################
+# end of [CS391-2025-Summer/lectures/lecture-06-24/lambda3.py]
 ##################################################################
