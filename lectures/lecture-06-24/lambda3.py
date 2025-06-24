@@ -702,13 +702,26 @@ def nind_emit(nind):
         strn_emit(' ')
     return None
 
+def args_emit(args):
+    i0 = 0
+    n0 = len(args)
+    while(i0 < n0):
+        if (i0 >= 1):
+            str_emit(', ')
+        treg_emit(args[i0])
+        i0 = i0 + 1
+    return None
+
 def tins_emit(nind, tins):
     nind_emit(nind)
     if (tins.ctag == "TINSmov"):
         treg_emit(tins.arg1); strn_emit(' = '); tval_emit(tins.arg2); endl_emit()
     if (tins.ctag == "TINSapp"):
         treg_emit(tins.arg1); strn_emit(' = ');
-        tval_emit(tins.arg2); strn_emit('('); tval_emit(tins.arg3); strn_emit(')'); endl_emit()
+        treg_emit(tins.arg2); strn_emit('('); treg_emit(tins.arg3); strn_emit(')'); endl_emit()
+    if (tins.ctag == "TINSopr"):
+        treg_emit(tins.arg1); strn_emit(' = ');
+        strn_emit(tins.arg2); strn_emit('('); args_emit(tins.arg3); strn_emit(')'); endl_emit()
     # HX: please finish the rest of the cases
     raise TypeError(tins) # HX-2025-06-24: should be deadcode!    
 
