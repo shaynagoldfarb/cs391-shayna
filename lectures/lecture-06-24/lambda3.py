@@ -423,6 +423,7 @@ print("tpck(CHNUM3) = " + str(term_tpck00(CHNUM3)))
 
 class treg:
     prfx = ""
+    narg = 0
     ntmp = 100
     nfun = 100
     def __init__(self, prfx, sffx):
@@ -432,7 +433,8 @@ class treg:
 # end-of-class(treg)
 
 def targ_new():
-    return treg("arg", 0)
+    treg.narg += 1
+    return treg("arg", treg.narg)
 def ttmp_new():
     treg.ntmp += 1
     return treg("tmp", treg.ntmp)
@@ -486,7 +488,7 @@ class tval_btf(tval):
 # | TINSmov of (treg(*dst*), tval(*src*))
 # | TINSapp of (treg(*res*), treg(*fun*), treg(*arg*))
 # | TINSopr of (treg(*res*), strn(*opr*), list(treg))
-# | TINSfun of (treg(*f00*), tcmp(*body*))
+# | TINSfun of (treg(*f00*), treg(*x01*), tcmp(*body*))
 # | TINSif0 of (treg(*res*), treg(*test*), tcmp(*then*), tcmp(*else*))
 
 # datatype tcmp =
@@ -542,9 +544,10 @@ class tins_fun(tins):
     def __init__(self, arg1, arg2):
         self.arg1 = arg1
         self.arg2 = arg2
+        self.arg3 = arg3
         self.ctag = "TINSfun"
     def __str__(self):
-        return ("tins_fun(" + str(self.arg1) + ";" + str(self.arg2) + ";" + ")")
+        return ("tins_fun(" + str(self.arg1) + ";" + str(self.arg2) + ";" + str(self.arg3) + ";" + ")")
 
 # datatype tcmp =
 # | TCMP of (list(tins), treg)
@@ -680,7 +683,7 @@ print("comp00(term_dbl) = " + str(term_comp00(term_dbl)))
 # | TINSmov of (treg(*dst*), tval(*src*))
 # | TINSapp of (treg(*res*), treg(*fun*), treg(*arg*))
 # | TINSopr of (treg(*res*), strn(*opr*), list(treg))
-# | TINSfun of (treg(*f00*), tcmp(*body*))
+# | TINSfun of (treg(*f00*), treg(*x01*), tcmp(*body*))
 # | TINSif0 of (treg(*res*), treg(*test*), tcmp(*then*), tcmp(*else*))
 
 def strn_emit(strn):
@@ -702,6 +705,19 @@ def nind_emit(nind):
         strn_emit(' ')
     return None
 
+def topr_emit(opnm):
+    if (opnm == "+"):
+        strn_emit("TINSadd")
+    if (opnm == "-"):
+        strn_emit("TINSsub")
+    if (opnm == "*"):
+        strn_emit("TINSmul")
+    if (opnm == "/"):
+        strn_emit("TINSdiv")
+    if (opnm == "%"):
+        strn_emit("TINSmod")
+    raise TypeError(opnm) # HX-2025-06-24: unsupported!
+
 def args_emit(args):
     i0 = 0
     n0 = len(args)
@@ -721,7 +737,7 @@ def tins_emit(nind, tins):
         treg_emit(tins.arg2); strn_emit('('); treg_emit(tins.arg3); strn_emit(')'); endl_emit()
     if (tins.ctag == "TINSopr"):
         treg_emit(tins.arg1); strn_emit(' = ');
-        strn_emit(tins.arg2); strn_emit('('); args_emit(tins.arg3); strn_emit(')'); endl_emit()
+        topr_emit(tins.arg2); strn_emit('('); args_emit(tins.arg3); strn_emit(')'); endl_emit()
     # HX: please finish the rest of the cases
     raise TypeError(tins) # HX-2025-06-24: should be deadcode!    
 
