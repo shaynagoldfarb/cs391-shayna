@@ -162,6 +162,8 @@ print("term_dbl = " + str(term_dbl))
 
 term_lt = lambda a1, a2: term_opr("<", [a1, a2])
 term_lte = lambda a1, a2: term_opr("<=", [a1, a2])
+term_gt = lambda a1, a2: term_opr(">", [a1, a2])
+term_gte = lambda a1, a2: term_opr(">=", [a1, a2])
 
 # TMfix of
 # (strn(*f*), strn(*x*), styp(*arg*), styp(*res*), term)
@@ -395,11 +397,17 @@ print("tpck(term_dbl) = " + str(term_tpck00(term_dbl)))
 
 int_0 = term_int( 0 )
 int_1 = term_int( 1 )
-var_f = term_var("f")
-var_n = term_var("n")
 int_3 = term_int(3)
 int_5 = term_int(5)
+var_f = term_var("f")
+var_n = term_var("n")
+var_i = term_var("i")
+var_r = term_var("r")
 int_10 = term_int(10)
+var_f2 = term_var("f2")
+
+##################################################################
+
 term_fact = \
   term_fix("f", "n", styp_int, styp_int, \
     term_if0(term_lte(var_n, int_0), \
@@ -407,6 +415,20 @@ term_fact = \
       term_mul(var_n, term_app(var_f, term_sub(var_n, int_1)))))
 
 print("tpck(term_fact) = " + str(term_tpck00(term_fact)))
+
+term_fact2 = \
+  term_lam("n", styp_int, \
+    term_app( \
+      term_app( \
+        term_fix("f", "i", styp_int, styp_fun_int_int, \
+          term_lam("r", styp_int, \
+            term_if0(term_gte(var_i, var_n), \
+              var_r, \
+              term_app( \
+                term_app(var_f, term_add(var_i, int_1)), \
+                term_mul(term_add(var_i, int_1), var_r))))), int_1), int_1))
+
+print("tpck(term_fact2) = " + str(term_tpck00(term_fact2)))
 
 ##################################################################
 
@@ -652,6 +674,28 @@ def term_comp01(tm0, cenv):
             ttmp = ttmp_new()
             inss = ins1 + ins2 + [tins_opr(ttmp, "*", [tmp1, tmp2])]
             return tcmp(inss, ttmp)
+        if (pnm == "<"):
+            assert len(ags) == 2
+            cmp1 = term_comp01(ags[0], cenv)
+            cmp2 = term_comp01(ags[1], cenv)
+            ins1 = cmp1.arg1
+            tmp1 = cmp1.arg2
+            ins2 = cmp2.arg1
+            tmp2 = cmp2.arg2
+            ttmp = ttmp_new()
+            inss = ins1 + ins2 + [tins_opr(ttmp, "<", [tmp1, tmp2])]
+            return tcmp(inss, ttmp)
+        if (pnm == ">"):
+            assert len(ags) == 2
+            cmp1 = term_comp01(ags[0], cenv)
+            cmp2 = term_comp01(ags[1], cenv)
+            ins1 = cmp1.arg1
+            tmp1 = cmp1.arg2
+            ins2 = cmp2.arg1
+            tmp2 = cmp2.arg2
+            ttmp = ttmp_new()
+            inss = ins1 + ins2 + [tins_opr(ttmp, ">", [tmp1, tmp2])]
+            return tcmp(inss, ttmp)
         if (pnm == "<="):
             assert len(ags) == 2
             cmp1 = term_comp01(ags[0], cenv)
@@ -662,6 +706,17 @@ def term_comp01(tm0, cenv):
             tmp2 = cmp2.arg2
             ttmp = ttmp_new()
             inss = ins1 + ins2 + [tins_opr(ttmp, "<=", [tmp1, tmp2])]
+            return tcmp(inss, ttmp)
+        if (pnm == ">="):
+            assert len(ags) == 2
+            cmp1 = term_comp01(ags[0], cenv)
+            cmp2 = term_comp01(ags[1], cenv)
+            ins1 = cmp1.arg1
+            tmp1 = cmp1.arg2
+            ins2 = cmp2.arg1
+            tmp2 = cmp2.arg2
+            ttmp = ttmp_new()
+            inss = ins1 + ins2 + [tins_opr(ttmp, ">=", [tmp1, tmp2])]
             return tcmp(inss, ttmp)
         raise TypeError(pnm) # HX-2025-06-18: unsupported!
     if (tm0.ctag == "TMapp"):    
@@ -755,7 +810,7 @@ def topr_emit(opnm):
         strn_emit("TINSigt"); return
     if (opnm == "<="):
         strn_emit("TINSile"); return
-    if (opnm == "=>"):
+    if (opnm == ">="):
         strn_emit("TINSige"); return
     raise TypeError(opnm) # HX-2025-06-24: unsupported!
 
@@ -822,6 +877,8 @@ def tinslst_emit(inss, nind):
 nind = 0
 tcmp_fact = term_comp00(term_fact)
 tinslst_emit(tcmp_fact.arg1, nind)
+tcmp_fact2 = term_comp00(term_fact2)
+tinslst_emit(tcmp_fact2.arg1, nind)
 
 ##################################################################
 # end of [CS391-2025-Summer/lectures/lecture-06-24/lambda3.py]
