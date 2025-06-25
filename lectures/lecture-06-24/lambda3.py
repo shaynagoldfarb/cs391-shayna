@@ -793,6 +793,7 @@ def tins_emit(tins, nind):
         treg_emit(tins.arg1); strn_emit('(')
         treg_emit(tins.arg2); strn_emit('):'); endl_emit()
         tinslst_emit(tcmp_body.arg1, nind+2)
+        nind_emit(nind+2)
         strn_emit('return '); treg_emit(tcmp_body.arg2); endl_emit()
         return
     # TINSif0 of (treg(*res*), treg(*test*), tcmp(*then*), tcmp(*else*))
