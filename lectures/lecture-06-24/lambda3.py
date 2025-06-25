@@ -541,7 +541,7 @@ class tins_if0(tins):
 
 # | TINSfun of (treg(*f00*), tcmp(*body*))
 class tins_fun(tins):
-    def __init__(self, arg1, arg2):
+    def __init__(self, arg1, arg2, arg3):
         self.arg1 = arg1
         self.arg2 = arg2
         self.arg3 = arg3
@@ -630,6 +630,39 @@ def term_comp01(tm0, cenv):
             ttmp = ttmp_new()
             inss = ins1 + ins2 + [tins_opr(ttmp, "+", [tmp1, tmp2])]
             return tcmp(inss, ttmp)
+        if (pnm == "-"):
+            assert len(ags) == 2
+            cmp1 = term_comp01(ags[0], cenv)
+            cmp2 = term_comp01(ags[1], cenv)
+            ins1 = cmp1.arg1
+            tmp1 = cmp1.arg2
+            ins2 = cmp2.arg1
+            tmp2 = cmp2.arg2
+            ttmp = ttmp_new()
+            inss = ins1 + ins2 + [tins_opr(ttmp, "-", [tmp1, tmp2])]
+            return tcmp(inss, ttmp)
+        if (pnm == "*"):
+            assert len(ags) == 2
+            cmp1 = term_comp01(ags[0], cenv)
+            cmp2 = term_comp01(ags[1], cenv)
+            ins1 = cmp1.arg1
+            tmp1 = cmp1.arg2
+            ins2 = cmp2.arg1
+            tmp2 = cmp2.arg2
+            ttmp = ttmp_new()
+            inss = ins1 + ins2 + [tins_opr(ttmp, "*", [tmp1, tmp2])]
+            return tcmp(inss, ttmp)
+        if (pnm == "<="):
+            assert len(ags) == 2
+            cmp1 = term_comp01(ags[0], cenv)
+            cmp2 = term_comp01(ags[1], cenv)
+            ins1 = cmp1.arg1
+            tmp1 = cmp1.arg2
+            ins2 = cmp2.arg1
+            tmp2 = cmp2.arg2
+            ttmp = ttmp_new()
+            inss = ins1 + ins2 + [tins_opr(ttmp, "<=", [tmp1, tmp2])]
+            return tcmp(inss, ttmp)
         raise TypeError(pnm) # HX-2025-06-18: unsupported!
     if (tm0.ctag == "TMapp"):    
         cmp1 = term_comp01(tm0.arg1, cenv)
@@ -657,7 +690,7 @@ def term_comp01(tm0, cenv):
         arg0 = targ_new()
         cenv = cenv_cons(x01, arg0, cenv)
         cmp1 = term_comp01(tm0.arg3, cenv)
-        inss = [tins_fun(fun0, cmp1)]
+        inss = [tins_fun(fun0, arg0, cmp1)]
         return tcmp(inss, fun0)
     if (tm0.ctag == "TMfix"):
         f00 = tm0.arg1
@@ -667,7 +700,7 @@ def term_comp01(tm0, cenv):
         cenv = cenv_cons(f00, fun0, cenv)
         cenv = cenv_cons(x01, arg0, cenv)
         cmp1 = term_comp01(tm0.arg5, cenv)
-        inss = [tins_fun(fun0, cmp1)]
+        inss = [tins_fun(fun0, arg0, cmp1)]
         return tcmp(inss, fun0)
     raise TypeError(tm0) # HX-2025-06-18: unsupported!
 
@@ -675,7 +708,6 @@ print("comp00(int_1) = " + str(term_comp00(int_1)))
 print("comp00(btf_t) = " + str(term_comp00(btf_t)))
 print("comp00(term_add(int_1, int_2)) = " + str(term_comp00(term_add(int_1, int_2))))
 print("comp00(term_dbl) = " + str(term_comp00(term_dbl)))
-# print("comp00(term_fact) = " + str(term_comp00(term_fact)))
 
 ##################################################################
 
@@ -686,17 +718,18 @@ print("comp00(term_dbl) = " + str(term_comp00(term_dbl)))
 # | TINSfun of (treg(*f00*), treg(*x01*), tcmp(*body*))
 # | TINSif0 of (treg(*res*), treg(*test*), tcmp(*then*), tcmp(*else*))
 
+def endl_emit():
+    strn_emit('\n')
+
 def strn_emit(strn):
     print(strn, end='')
-
-def endl_emit(strn):
-    strn_emit('\n')
 
 def tval_emit(tval):
     strn_emit(str(tval))
 
 def treg_emit(treg):
-    strn_emit(str(treg))
+    strn_emit(treg.prfx);
+    strn_emit(str(treg.sffx));
 
 def nind_emit(nind):
     i0 = 0
@@ -707,15 +740,23 @@ def nind_emit(nind):
 
 def topr_emit(opnm):
     if (opnm == "+"):
-        strn_emit("TINSadd")
+        strn_emit("TINSadd"); return
     if (opnm == "-"):
-        strn_emit("TINSsub")
+        strn_emit("TINSsub"); return
     if (opnm == "*"):
-        strn_emit("TINSmul")
+        strn_emit("TINSmul"); return
     if (opnm == "/"):
-        strn_emit("TINSdiv")
+        strn_emit("TINSdiv"); return
     if (opnm == "%"):
-        strn_emit("TINSmod")
+        strn_emit("TINSmod"); return
+    if (opnm == "<"):
+        strn_emit("TINSilt"); return
+    if (opnm == ">"):
+        strn_emit("TINSigt"); return
+    if (opnm == "<="):
+        strn_emit("TINSile"); return
+    if (opnm == "=>"):
+        strn_emit("TINSige"); return
     raise TypeError(opnm) # HX-2025-06-24: unsupported!
 
 def args_emit(args):
@@ -723,23 +764,63 @@ def args_emit(args):
     n0 = len(args)
     while(i0 < n0):
         if (i0 >= 1):
-            str_emit(', ')
+            strn_emit(', ')
         treg_emit(args[i0])
         i0 = i0 + 1
     return None
 
-def tins_emit(nind, tins):
+def tins_emit(tins, nind):
+    # print("tins_emit: tins = (" + str(tins) + ")")
     nind_emit(nind)
+    # TINSmov of (treg(*dst*), tval(*src*))
     if (tins.ctag == "TINSmov"):
         treg_emit(tins.arg1); strn_emit(' = '); tval_emit(tins.arg2); endl_emit()
+        return
+    # TINSapp of (treg(*res*), treg(*fun*), treg(*arg*))
     if (tins.ctag == "TINSapp"):
-        treg_emit(tins.arg1); strn_emit(' = ');
+        treg_emit(tins.arg1); strn_emit(' = ')
         treg_emit(tins.arg2); strn_emit('('); treg_emit(tins.arg3); strn_emit(')'); endl_emit()
+        return
+    # TINSopr of (treg(*res*), strn(*opr*), list(treg))
     if (tins.ctag == "TINSopr"):
-        treg_emit(tins.arg1); strn_emit(' = ');
+        treg_emit(tins.arg1); strn_emit(' = ')
         topr_emit(tins.arg2); strn_emit('('); args_emit(tins.arg3); strn_emit(')'); endl_emit()
+        return
+    # TINSfun of (treg(*f00*), treg(*x01*), tcmp(*body*))
+    if (tins.ctag == "TINSfun"):
+        tcmp_body = tins.arg3
+        strn_emit('def ')
+        treg_emit(tins.arg1); strn_emit('(')
+        treg_emit(tins.arg2); strn_emit('):'); endl_emit()
+        tinslst_emit(tcmp_body.arg1, nind+2)
+        strn_emit('return '); treg_emit(tcmp_body.arg2); endl_emit()
+        return
+    # TINSif0 of (treg(*res*), treg(*test*), tcmp(*then*), tcmp(*else*))
+    if (tins.ctag == "TINSif0"):
+        tcmp_then = tins.arg3
+        tcmp_else = tins.arg4
+        treg_emit(tins.arg1); strn_emit(' = '); strn_emit('None'); endl_emit()
+        nind_emit(nind)
+        strn_emit('if ('); treg_emit(tins.arg2); strn_emit('):');  endl_emit()
+        tinslst_emit(tcmp_then.arg1, nind+2)
+        nind_emit(nind+2)
+        treg_emit(tins.arg1); strn_emit(' = '); treg_emit(tcmp_then.arg2); endl_emit()
+        nind_emit(nind); strn_emit('else:'); endl_emit()
+        tinslst_emit(tcmp_else.arg1, nind+2)
+        nind_emit(nind+2)
+        treg_emit(tins.arg1); strn_emit(' = '); treg_emit(tcmp_else.arg2); endl_emit()
+        return
     # HX: please finish the rest of the cases
     raise TypeError(tins) # HX-2025-06-24: should be deadcode!    
+
+def tinslst_emit(inss, nind):
+    for tins in inss: tins_emit(tins, nind)
+
+##################################################################
+
+nind = 0
+tcmp_fact = term_comp00(term_fact)
+tinslst_emit(tcmp_fact.arg1, nind)
 
 ##################################################################
 # end of [CS391-2025-Summer/lectures/lecture-06-24/lambda3.py]
