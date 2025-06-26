@@ -823,3 +823,10 @@ def tcmp_pyemit(tcmp_obj):
 
     code_lines.append(f"    return " + str(tcmp_obj.arg2))
     return "\n".join(code_lines)
+
+term = term_add(term_int(3), term_int(4))
+cmp = term_comp00(term)
+print(tcmp_pyemit(cmp))
+
+term = term_app(term_dbl, term_int(10))
+print(tcmp_pyemit(term_comp00(term)))
