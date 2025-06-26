@@ -674,6 +674,80 @@ print("comp00(term_add(int_1, int_2)) = " + str(term_comp00(term_add(int_1, int_
 print("comp00(term_dbl) = " + str(term_comp00(term_dbl)))
 # print("comp00(term_fact) = " + str(term_comp00(term_fact)))
 
-##################################################################
-# end of [CS391-2025-Summer/lectures/lecture-06-18/lambda3.py]
-##################################################################
+
+def compile_isPrime():
+    treg.nfun = 500  # Reset counters to avoid collisions
+    treg.ntmp = 800
+
+    # === Allocate function and argument registers ===
+    fun_isPrime = tfun_new()   # function for isPrime
+    arg_n = targ_new()         # argument: n
+
+    fun_helper = tfun_new()    # nested function: helper(p)
+    arg_p = targ_new()         # argument to helper: p
+
+    # === Helper body ===
+    # tmp1 = p * p
+    tmp1 = ttmp_new()
+    # tmp2 = p*p > n
+    tmp2 = ttmp_new()
+    # tmp3 = n % p
+    tmp3 = ttmp_new()
+    # tmp4 = p + 1
+    tmp4 = ttmp_new()
+    # tmp5 = helper(p+1)
+    tmp5 = ttmp_new()
+    # tmp6 = result of inner if0
+    tmp6 = ttmp_new()
+    # tmp7 = final result of helper
+    tmp7 = ttmp_new()
+
+    # if n % p == 0 then false else helper(p+1)
+    inner_if = tins_if0(
+        tmp6,
+        tmp3,
+        tcmp([tins_mov(tmp6, tval_btf(False))], tmp6),
+        tcmp([
+            tins_opr(tmp4, "+", [arg_p, treg("lit", 1)]),
+            tins_app(tmp5, fun_helper, tmp4)
+        ], tmp5)
+    )
+
+    # Full helper function body: if p*p > n then true else (inner_if)
+    cmp_helper = tcmp([
+        tins_opr(tmp1, "*", [arg_p, arg_p]),
+        tins_opr(tmp2, ">", [tmp1, arg_n]),
+        tins_opr(tmp3, "%", [arg_n, arg_p]),
+        inner_if,
+        tins_if0(
+            tmp7,
+            tmp2,
+            tcmp([tins_mov(tmp7, tval_btf(True))], tmp7),
+            tcmp([], tmp6)
+        )
+    ], tmp7)
+
+    ins_fun_helper = tins_fun(fun_helper, cmp_helper)
+
+    # === isPrime body ===
+    tmp_cmp = ttmp_new()
+    tmp_res = ttmp_new()
+    tmp_call = ttmp_new()
+
+    # if n >= 2 then helper(2) else false
+    cmp_isPrime = tcmp([
+        ins_fun_helper,
+        tins_opr(tmp_cmp, ">=", [arg_n, treg("lit", 2)]),
+        tins_if0(
+            tmp_res,
+            tmp_cmp,
+            tcmp([
+                tins_app(tmp_call, fun_helper, treg("lit", 2))
+            ], tmp_call),
+            tcmp([
+                tins_mov(tmp_res, tval_btf(False))
+            ], tmp_res)
+        )
+    ], tmp_res)
+
+    return tins_fun(fun_isPrime, cmp_isPrime)
